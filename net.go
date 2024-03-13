@@ -32,7 +32,7 @@ func (n netBuilder) Build() *Net {
 	}
 }
 
-func (n *Net) Process(inputs []float64) []float64 {
+func (n *Net) Process(inputs []float32) []float32 {
 	outputs := inputs
 	for _, layer := range n.Layers {
 		outputs = layer.Process(outputs)
