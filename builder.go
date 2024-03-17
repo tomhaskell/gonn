@@ -2,13 +2,15 @@ package gonn
 
 import "github.com/tomhaskell/gonn/nn"
 
-type NetBuilder interface {
-	SetInputCount(numInputs int) NetBuilder
-	AddLayer(numNeurons int) NetBuilder
+// Builder is a Builder pattern for creating a new gonn neural network
+type Builder interface {
+	SetInputCount(numInputs int) Builder
+	AddLayer(numNeurons int) Builder
 	Build() *Net
 }
 
-func NewNetBuilder() NetBuilder {
+// NewBuilder creates a new Builder
+func NewBuilder() Builder {
 	return netBuilder{
 		inputs: 0,
 		layers: make([]int, 0),
@@ -20,14 +22,17 @@ type netBuilder struct {
 	layers []int
 }
 
-func (n netBuilder) SetInputCount(numInputs int) NetBuilder {
+// SetInputCount sets the number of inputs for the neural network
+func (n netBuilder) SetInputCount(numInputs int) Builder {
 	n.inputs = numInputs
 	return n
 }
-func (n netBuilder) AddLayer(numNeurons int) NetBuilder {
+// AddLayer adds a layer to the neural network with the given number of neurons
+func (n netBuilder) AddLayer(numNeurons int) Builder {
 	n.layers = append(n.layers, numNeurons)
 	return n
 }
+
 func (n netBuilder) Build() *Net {
 	l := make([]*nn.Layer, len(n.layers))
 	numInputs := n.inputs
