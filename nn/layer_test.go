@@ -8,9 +8,11 @@ func TestLayerProcess(t *testing.T) {
 	l := &Layer{
 		Neurons: []*Neuron{
 			{ 
+				Type: LINEAR,
 				Weights: []float32{0.3, -0.8},
 				Bias: 0.7,
 			},{ 
+				Type: LINEAR,
 				Weights: []float32{0.7, 0.15},
 				Bias: -0.57,
 			},
@@ -32,7 +34,7 @@ func TestLayerProcess(t *testing.T) {
 }
 
 func TestNewLayer(t *testing.T) {
-	l := NewLayer(3, 4)
+	l := NewLayer(LINEAR, 3, 4)
 
 	// check for 3 neurons
 	if len(l.Neurons) != 3 {
