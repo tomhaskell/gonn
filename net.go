@@ -15,7 +15,7 @@ func NewNet(Layers []*nn.Layer) *Net {
 }
 
 // Process runs the input through the network and returns the output
-func (n *Net) Process(inputs []float32) []float32 {
+func (n *Net) Process(inputs []float64) []float64 {
 	outputs := inputs
 	for _, layer := range n.Layers {
 		outputs = layer.Process(outputs)

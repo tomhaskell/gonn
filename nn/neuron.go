@@ -1,8 +1,8 @@
 package nn
 
 import (
-	"math"
 	"math/rand"
+
 	"github.com/tomhaskell/gonn/nnmath"
 )
 
@@ -19,8 +19,8 @@ const (
 // Neuron represents a single neuron in a neural network
 type Neuron struct {
 	Type    string    `json:"type"`
-	Weights []float32 `json:"weights"`
-	Bias    float32   `json:"bias"`
+	Weights []float64 `json:"weights"`
+	Bias    float64   `json:"bias"`
 }
 
 // NewNeuron creates a new neuron with the given number of inputs, and using the given activation
@@ -32,9 +32,9 @@ type Neuron struct {
 // - RELU: f(x) = max(0, x)
 // - LINEAR: f(x) = x
 func NewNeuron(activationType string, numInputs int) *Neuron {
-	w := make([]float32, numInputs)
+	w := make([]float64, numInputs)
 	for i := 0; i < numInputs; i++ {
-		w[i] = rand.Float32()*2.0 - 1.0 // random number between -1 and 1
+		w[i] = rand.Float64()*2.0 - 1.0 // random number between -1 and 1
 	}
 	return &Neuron{
 		Type:    activationType,
@@ -44,7 +44,7 @@ func NewNeuron(activationType string, numInputs int) *Neuron {
 }
 
 // Process takes a slice of inputs and returns the output of the neuron
-func (n *Neuron) Process(inputs []float32) float32 {
+func (n *Neuron) Process(inputs []float64) float64 {
 	sum := n.Bias
 	for i, input := range inputs {
 		sum += input * n.Weights[i]

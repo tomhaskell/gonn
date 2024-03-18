@@ -17,8 +17,8 @@ func NewLayer(activationType string, numNeurons, numInputs int) *Layer {
 }
 
 // Process takes a slice of inputs from the previous layer and returns the output of the layer
-func (l *Layer) Process(inputs []float32) []float32 {
-	outputs := make([]float32, len(l.Neurons))
+func (l *Layer) Process(inputs []float64) []float64 {
+	outputs := make([]float64, len(l.Neurons))
 	for i, neuron := range l.Neurons {
 		outputs[i] = neuron.Process(inputs)
 	}

@@ -7,22 +7,22 @@ import (
 func TestLayerProcess(t *testing.T) {
 	l := &Layer{
 		Neurons: []*Neuron{
-			{ 
-				Type: LINEAR,
-				Weights: []float32{0.3, -0.8},
-				Bias: 0.7,
-			},{ 
-				Type: LINEAR,
-				Weights: []float32{0.7, 0.15},
-				Bias: -0.57,
+			{
+				Type:    LINEAR,
+				Weights: []float64{0.3, -0.8},
+				Bias:    0.7,
+			}, {
+				Type:    LINEAR,
+				Weights: []float64{0.7, 0.15},
+				Bias:    -0.57,
 			},
 		},
 	}
 
-	out := l.Process([]float32{0.1, 0.2})
+	out := l.Process([]float64{0.1, 0.2})
 
-	expected := []float32{
-		0.1*0.3 + 0.2*-0.8 + 0.7, // 0.57
+	expected := []float64{
+		0.1*0.3 + 0.2*-0.8 + 0.7,   // 0.57
 		0.1*0.7 + 0.2*0.15 + -0.57, // -0.47
 	}
 
