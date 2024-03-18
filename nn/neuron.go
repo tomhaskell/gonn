@@ -3,6 +3,7 @@ package nn
 import (
 	"math"
 	"math/rand"
+	"github.com/tomhaskell/gonn/nnmath"
 )
 
 // Activation function types
@@ -50,7 +51,7 @@ func (n *Neuron) Process(inputs []float32) float32 {
 	}
 	switch n.Type {
 	case SIGMOID:
-		return float32(1.0 / (1.0 + math.Exp(float64(-sum))))
+		return nnmath.Sigmoid(sum)
 	case RELU:
 		if sum < 0 {
 			return 0
