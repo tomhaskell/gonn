@@ -15,10 +15,10 @@ func NewNet(Layers []*nn.Layer) *Net {
 }
 
 // Process runs the input through the network and returns the output
-func (n *Net) Process(inputs []float64) []float64 {
+func (n *Net) FeedForward(inputs []float64) []float64 {
 	outputs := inputs
 	for _, layer := range n.Layers {
-		outputs = layer.Process(outputs)
+		layer.Forward(outputs)
 	}
 	return outputs
 }

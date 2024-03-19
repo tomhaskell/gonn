@@ -16,11 +16,28 @@ func NewLayer(activationType string, numNeurons, numInputs int) *Layer {
 	}
 }
 
-// Process takes a slice of inputs from the previous layer and returns the output of the layer
-func (l *Layer) Process(inputs []float64) []float64 {
+// Update takes a slice of inputs from the previous layer and returns the z-vector of the layer
+func (l *Layer) Update(inputs []float64) []float64 {
+	zs := make([]float64, len(l.Neurons))
+	for i, neuron := range l.Neurons {
+		zs[i] = neuron.Update(inputs)
+	}
+	return zs
+}
+
+// Activation returns the activation vector of the layer based on a previous call to Update
+func (l *Layer) Activation() []float64 {
 	outputs := make([]float64, len(l.Neurons))
 	for i, neuron := range l.Neurons {
-		outputs[i] = neuron.Process(inputs)
+		outputs[i] = neuron.Activation()
 	}
 	return outputs
+}
+
+// Forward takes a slice of inputs from the previous layer and returns the activation vector of the layer.
+// 
+// This is a convenience method that calls Update followed by Activation in a single call.
+func (l *Layer) Forward(inputs []float64) []float64 {
+	l.Update(inputs)
+	return l.Activation()
 }
