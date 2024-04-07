@@ -9,7 +9,8 @@ func Sigmoid(x float64) float64 {
 
 // SigmoidPrime returns the derivative of the sigmoid function
 func SigmoidPrime(x float64) float64 {
-	return Sigmoid(x) * (1 - Sigmoid(x))
+	s := Sigmoid(x)
+	return s * (1 - s)
 }
 
 // MeanSquaredError returns the average of the squared differences between the actual and expected values
@@ -18,6 +19,6 @@ func MeanSquaredError(actual, expected []float64) float64 {
 	for i := range actual {
 		sum += math.Pow(float64(expected[i] - actual[i]), 2)
 	}
-	return sum / float64(len(actual))
+	return sum / float64(len(actual)*2)
 }
 
