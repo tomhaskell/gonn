@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/tomhaskell/gonn"
-	"github.com/tomhaskell/gonn/nnmath"
 	"github.com/tomhaskell/gonn/training"
 )
 
@@ -18,12 +17,12 @@ func main() {
 	trainInputs, trainTargets := parseDataFile(".data/mnist_train.csv")
 	// testInputs, testTargets := parseDataFile("examples/mnist/.data/mnist_test.csv")
 	
-	// create a new neural network with 784 input neurons, 15 hidden neurons, and 10 output neurons (one for each digit)
-	net := gonn.NewBuilder().SetInputCount(784).AddLayer(15).AddLayer(10).Build()
+	// create a new neural network with 784 input neurons, 2 x 16 hidden neurons, and 10 output neurons (one for each digit)
+	net := gonn.NewBuilder().SetInputCount(784).AddLayer(16).AddLayer(16).AddLayer(10).Build()
 
 	// train the network
 	var t training.Trainer = training.NewBackProp(0.1, 0, 1000)
-	t.Train(net, &trainInputs, &trainTargets, 1, nnmath.MeanSquaredError)
+	t.Train(net, &trainInputs, &trainTargets, 10)
 
 	// test the network
 	//test(net, testInputs, testTargets)
