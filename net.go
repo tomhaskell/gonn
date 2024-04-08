@@ -18,7 +18,7 @@ func NewNet(Layers []*nn.Layer) *Net {
 func (n *Net) FeedForward(inputs []float64) []float64 {
 	outputs := inputs
 	for _, layer := range n.Layers {
-		layer.Forward(outputs)
+		outputs = layer.Forward(outputs)
 	}
 	return outputs
 }
