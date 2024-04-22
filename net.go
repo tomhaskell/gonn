@@ -1,6 +1,10 @@
 package gonn
 
-import "github.com/tomhaskell/gonn/nn"
+import (
+	"fmt"
+
+	"github.com/tomhaskell/gonn/nn"
+)
 
 // Net is a simple feedforward neural network
 type Net struct {
@@ -38,4 +42,12 @@ func (n *Net) Calculate(inputs []float64) ([][]float64, [][]float64) {
 		outputs = activations[l]
 	}
 	return zs, activations
+}
+
+func (n *Net) String() string {
+	str := fmt.Sprintf("%v[Input]",n.NumInputs)
+	for _, l := range n.Layers {
+		str += fmt.Sprintf(", %v[%s]", len(l.Neurons), l.Type)
+	}
+	return str
 }

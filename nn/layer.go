@@ -3,6 +3,7 @@ package nn
 // Layer represents a layer of neurons in a neural network
 type Layer struct {
 	Neurons []*Neuron `json:"neurons"`
+	Type string
 }
 
 // NewLayer creates a new layer of `numNeurons` neurons with the given activation type and number of inputs
@@ -13,6 +14,7 @@ func NewLayer(activationType string, numNeurons, numInputs int) *Layer {
 	}
 	return &Layer{
 		Neurons: n,
+		Type: activationType,
 	}
 }
 

@@ -12,7 +12,7 @@ type Builder interface {
 
 // NewBuilder creates a new Builder
 func NewBuilder() Builder {
-	return netBuilder{
+	return &netBuilder{
 		activation: nn.SIGMOID,
 		inputs: 0,
 		layers: make([]int, 0),

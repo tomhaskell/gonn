@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,19 +12,43 @@ import (
 	"github.com/tomhaskell/gonn/training"
 )
 
+var (
+	layers = flag.String("layers","24 16","list specifying number of neurons in each hidden layer")
+	epochs = flag.Int("epochs", 30, "number of training epochs to train the network for")
+	learnRate = flag.Float64("learnRate", 0.7, "the learning rate to use in the backprop algorithm")
+	batchSize = flag.Int("batchSize", 20, "the size of mini-batch to use for stochastic gradient descent")
+	act = flag.String("act", "sigmoid", "the activation function to use")
+)
+
 func main() {
+	flag.Parse()
 
 	// load the data
 	trainInputs, trainTargets := parseDataFile(".data/mnist_train.csv")
 	testInputs, testTargets := parseDataFile(".data/mnist_test.csv")
 	
-	// create a new neural network with 784 input neurons, 2 x 16 hidden neurons, and 10 output neurons (one for each digit)
-	net := gonn.NewBuilder().SetInputCount(784).AddLayer(30).AddLayer(10).Build()
+	// create a new neural network with 784 input neurons
+	nb := gonn.NewBuilder().SetInputCount(784)
 
-	// train the network
-	var t training.Trainer = training.NewBackProp(0.1, 0, 10)
+	for _, s := range strings.Split(*layers, " ") {
+		l, err := strconv.ParseInt(s,10,32)
+		if err != nil {
+			panic(fmt.Errorf("error parsing layers: %w", err))
+		}
+		nb = nb.AddLayer(int(l))
+	}
+
+	// add output neurons
+	nb = nb.AddLayer(10)
+
+	net := nb.Build()
+
+	fmt.Println("training net: ", net)
 	
-	for e := 0; e < 30; e++ { // 30 epochs
+	// train the network
+	var t training.Trainer = training.NewBackProp(*learnRate, 0, *batchSize)
+	
+	for e := 0; e < *epochs; e++ { // 30 epochs
 		t.TrainEpoch(net, &trainInputs, &trainTargets)
 
 		// test network for accuracy after each epoch
@@ -35,7 +60,7 @@ func main() {
 					correct++
 				}
 			}
-			fmt.Printf("Epoch %d: %d/%d correct\n", e, correct, len(testInputs))
+			fmt.Printf("Epoch %d: %d/%d correct (%d%%)\n", e, correct, len(testInputs), 100*correct/len(testInputs))
 		}
 
 	}
