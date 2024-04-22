@@ -49,5 +49,5 @@ func (n netBuilder) Build() *Net {
 		l[i] = nn.NewLayer(n.activation, numNeurons, numInputs)
 		numInputs = numNeurons
 	}
-	return NewNet(l)
+	return NewNet(l, n.inputs)
 }

@@ -5,12 +5,14 @@ import "github.com/tomhaskell/gonn/nn"
 // Net is a simple feedforward neural network
 type Net struct {
 	Layers []*nn.Layer `json:"layers"`
+	NumInputs int `json:"numInputs"`
 }
 
 // NewNet creates a new neural network with the given layers
-func NewNet(Layers []*nn.Layer) *Net {
+func NewNet(Layers []*nn.Layer, numInputs int) *Net {
 	return &Net{
 		Layers: Layers,
+		NumInputs: numInputs,
 	}
 }
 

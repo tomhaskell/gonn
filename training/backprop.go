@@ -41,8 +41,8 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 	in := *inputs
 	targ := *targets
 	// consts
-	L := len(net.Layers)
-	N := make([]int, L)
+	L := len(net.Layers) // number of layers
+	N := make([]int, L) // number of neurons per layer
 	for i, l := range net.Layers {
 		N[i] = len(l.Neurons)
 	}
@@ -54,15 +54,23 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 	})
 
 	i := 0
+	// all training sets
 	for i < len(in) {
-		// process the batch
 		batchCost := 0.0
 		batchDeltas := make([][]float64, L)           // holds delta values for each neuron for the batch
-		batchDeltaActivations := make([][]float64, L) // holds delta * input activation values for each neuron for the batch
+		batchDeltaActivations := make([][][]float64, L) // holds delta * input activation values for each neuron input weight for the batch
 		for d := 0; d < L; d++ {
 			batchDeltas[d] = make([]float64, N[d])
-			batchDeltaActivations[d] = make([]float64, N[d])
+			batchDeltaActivations[d] = make([][]float64, N[d])
+			for n := 0; n < N[d]; n++ {
+				if d == 0 {
+					batchDeltaActivations[d][n] = make([]float64, net.NumInputs)
+				} else {
+					batchDeltaActivations[d][n] = make([]float64, N[d-1])
+				}
+			}
 		}
+		// process a batch
 		for j := 0; j < b.batchSize && i < len(in); j++ {
 			zs, acts := net.Calculate(in[i])
 			// calculate the cost for the batch
@@ -77,13 +85,15 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 				d := nnmath.SigmoidPrime(zs[L-1][n]) * (acts[L-1][n] - targ[i][n])
 				deltas[L-1][n] = d
 				batchDeltas[L-1][n] += d
-				var act float64
-				if L == 1 {
-					act = in[i][n]
+				if L == 1 { // single layer network
+					for k := 0; k < len(in[i]); k++ {
+						batchDeltaActivations[L-1][n][k] += d * in[i][k]
+					}
 				} else {
-					act = acts[L-2][n]
+					for k := 0; k < N[L-2]; k++ {
+						batchDeltaActivations[L-1][n][k] += d * acts[L-2][k]
+					}
 				}
-				batchDeltaActivations[L-1][n] += d * act
 			}
 
 			// calulate the error in the hidden layer(s) by backpropagating the error
@@ -96,13 +106,15 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 					d *= nnmath.SigmoidPrime(zs[l][n])
 					deltas[l][n] = d
 					batchDeltas[l][n] += d
-					var act float64
-					if l == 0 {
-						act = in[i][n]
+					if l == 0 { // single layer network
+						for k := 0; k < len(in[i]); k++ {
+							batchDeltaActivations[l][n][k] += d * in[i][k]
+						}
 					} else {
-						act = acts[l-1][n]
+						for k := 0; k < N[l-1]; k++ {
+							batchDeltaActivations[l][n][k] += d * acts[l-1][k]
+						}
 					}
-					batchDeltaActivations[l][n] += d * act
 				}
 			}
 
@@ -111,12 +123,16 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 
 		// update the weights and biases using gradient descent based on the batch deltas
 		alpha := b.learningRate / float64(b.batchSize)
+		// each layer
 		for l := 0; l < L; l++ {
+			// each Neuron
 			for n := 0; n < N[l]; n++ {
 				neuron := net.Layers[l].Neurons[n]
+				// each input weight to Neuron
 				for i := 0; i < len(neuron.Weights); i++ {
-					neuron.Weights[i] -= alpha * batchDeltaActivations[l][n]
+					neuron.Weights[i] -= alpha * batchDeltaActivations[l][n][i]
 				}
+				// bias of Neuron
 				neuron.Bias -= alpha * batchDeltas[l][n]
 			}
 		}
