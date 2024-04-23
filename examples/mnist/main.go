@@ -18,6 +18,7 @@ var (
 	learnRate = flag.Float64("learnRate", 0.7, "the learning rate to use in the backprop algorithm")
 	batchSize = flag.Int("batchSize", 20, "the size of mini-batch to use for stochastic gradient descent")
 	act = flag.String("act", "sigmoid", "the activation function to use")
+	momentum = flag.Float64("momentum",0.0,"the momentum to use for the gradient descent algorithm")
 )
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 	fmt.Println("training net: ", net)
 	
 	// train the network
-	var t training.Trainer = training.NewBackProp(*learnRate, 0, *batchSize)
+	var t training.Trainer = training.NewBackProp(*learnRate, *momentum, *batchSize)
 	
 	for e := 0; e < *epochs; e++ { // 30 epochs
 		t.TrainEpoch(net, &trainInputs, &trainTargets)
@@ -64,10 +65,6 @@ func main() {
 		}
 
 	}
-
-
-	// test the network
-	//test(net, testInputs, testTargets)
 
 }
 

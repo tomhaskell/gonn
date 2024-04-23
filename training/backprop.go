@@ -53,6 +53,19 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 		targ[i], targ[j] = targ[j], targ[i]
 	})
 
+	// store the weight changes so we can use them the next time around for momentum
+	weightChanges := make([][][]float64, L)
+	for l := 0; l < L; l++ {
+		weightChanges[l] = make([][]float64, N[l])
+		for n := 0; n < N[l]; n++ {
+			if l == 0 {
+				weightChanges[l][n] = make([]float64, net.NumInputs)
+			} else {
+				weightChanges[l][n] = make([]float64, N[l-1])
+			}
+		}
+	}
+
 	i := 0
 	// all training sets
 	for i < len(in) {
@@ -123,6 +136,7 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 
 		// update the weights and biases using gradient descent based on the batch deltas
 		alpha := b.learningRate / float64(b.batchSize)
+		m := b.momentum / float64(b.batchSize)
 		// each layer
 		for l := 0; l < L; l++ {
 			// each Neuron
@@ -130,7 +144,8 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 				neuron := net.Layers[l].Neurons[n]
 				// each input weight to Neuron
 				for i := 0; i < len(neuron.Weights); i++ {
-					neuron.Weights[i] -= alpha * batchDeltaActivations[l][n][i]
+					weightChanges[l][n][i] = -alpha * batchDeltaActivations[l][n][i] + m * weightChanges[l][n][i]
+					neuron.Weights[i] += weightChanges[l][n][i]
 				}
 				// bias of Neuron
 				neuron.Bias -= alpha * batchDeltas[l][n]
