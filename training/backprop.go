@@ -171,7 +171,7 @@ func activationDerivative(actType string, value float64) float64 {
 			return 0
 		}
 	case nn.LINEAR:
-		return value
+		return 1
 	}
 	// unknown
 	fmt.Println("Error: unknown activation function, cannot calc derivative")
