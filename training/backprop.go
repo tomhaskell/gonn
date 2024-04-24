@@ -168,7 +168,7 @@ func activationDerivative(actType string, value float64) float64 {
 		if value > 0 {
 			return 1
 		} else {
-			return 0
+			return 0.01
 		}
 	case nn.LINEAR:
 		return 1

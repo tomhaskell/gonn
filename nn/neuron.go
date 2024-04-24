@@ -21,7 +21,7 @@ type Neuron struct {
 	Type    string    `json:"type"`
 	Weights []float64 `json:"weights"`
 	Bias    float64   `json:"bias"`
-	z	    float64
+	z       float64
 }
 
 // NewNeuron creates a new neuron with the given number of inputs, and using the given activation
@@ -60,7 +60,8 @@ func (n *Neuron) Activation() float64 {
 		return nnmath.Sigmoid(n.z)
 	case RELU:
 		if n.z < 0 {
-			return 0
+			// leak negative values
+			return 0.01 * n.z
 		}
 		return n.z
 	case LINEAR:
