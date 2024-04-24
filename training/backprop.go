@@ -1,9 +1,11 @@
 package training
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/tomhaskell/gonn"
+	"github.com/tomhaskell/gonn/nn"
 	"github.com/tomhaskell/gonn/nnmath"
 )
 
@@ -42,7 +44,7 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 	targ := *targets
 	// consts
 	L := len(net.Layers) // number of layers
-	N := make([]int, L) // number of neurons per layer
+	N := make([]int, L)  // number of neurons per layer
 	for i, l := range net.Layers {
 		N[i] = len(l.Neurons)
 	}
@@ -53,7 +55,7 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 		targ[i], targ[j] = targ[j], targ[i]
 	})
 
-	// store the weight changes so we can use them the next time around for momentum
+	// create slice to store the weight changes so we can use them with momentum for faster gradient descent
 	weightChanges := make([][][]float64, L)
 	for l := 0; l < L; l++ {
 		weightChanges[l] = make([][]float64, N[l])
@@ -70,7 +72,7 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 	// all training sets
 	for i < len(in) {
 		batchCost := 0.0
-		batchDeltas := make([][]float64, L)           // holds delta values for each neuron for the batch
+		batchDeltas := make([][]float64, L)             // holds delta values for each neuron for the batch
 		batchDeltaActivations := make([][][]float64, L) // holds delta * input activation values for each neuron input weight for the batch
 		for d := 0; d < L; d++ {
 			batchDeltas[d] = make([]float64, N[d])
@@ -93,9 +95,11 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 			for d := 0; d < L; d++ {
 				deltas[d] = make([]float64, N[d])
 			}
+
 			// calulate the error in the output layer
 			for n := 0; n < N[L-1]; n++ {
-				d := nnmath.SigmoidPrime(zs[L-1][n]) * (acts[L-1][n] - targ[i][n])
+				p := activationDerivative(net.Layers[L-1].Type, zs[L-1][n])
+				d := p * (acts[L-1][n] - targ[i][n])
 				deltas[L-1][n] = d
 				batchDeltas[L-1][n] += d
 				if L == 1 { // single layer network
@@ -116,10 +120,10 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 					for m := 0; m < N[l+1]; m++ {
 						d += deltas[l+1][m] * net.Layers[l+1].Neurons[m].Weights[n]
 					}
-					d *= nnmath.SigmoidPrime(zs[l][n])
+					d *= activationDerivative(net.Layers[l].Type, zs[l][n])
 					deltas[l][n] = d
 					batchDeltas[l][n] += d
-					if l == 0 { // single layer network
+					if l == 0 { // input layer
 						for k := 0; k < len(in[i]); k++ {
 							batchDeltaActivations[l][n][k] += d * in[i][k]
 						}
@@ -144,7 +148,7 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 				neuron := net.Layers[l].Neurons[n]
 				// each input weight to Neuron
 				for i := 0; i < len(neuron.Weights); i++ {
-					weightChanges[l][n][i] = -alpha * batchDeltaActivations[l][n][i] + m * weightChanges[l][n][i]
+					weightChanges[l][n][i] = -alpha*batchDeltaActivations[l][n][i] + m*weightChanges[l][n][i]
 					neuron.Weights[i] += weightChanges[l][n][i]
 				}
 				// bias of Neuron
@@ -154,4 +158,22 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 
 	}
 
+}
+
+func activationDerivative(actType string, value float64) float64 {
+	switch actType {
+	case nn.SIGMOID:
+		return nnmath.SigmoidPrime(value)
+	case nn.RELU:
+		if value > 0 {
+			return 1
+		} else {
+			return 0
+		}
+	case nn.LINEAR:
+		return value
+	}
+	// unknown
+	fmt.Println("Error: unknown activation function, cannot calc derivative")
+	return 0
 }
