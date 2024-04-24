@@ -12,7 +12,7 @@ type Builder interface {
 
 // NewBuilder creates a new Builder
 func NewBuilder() Builder {
-	return netBuilder{
+	return &netBuilder{
 		activation: nn.SIGMOID,
 		inputs: 0,
 		layers: make([]int, 0),
@@ -49,5 +49,5 @@ func (n netBuilder) Build() *Net {
 		l[i] = nn.NewLayer(n.activation, numNeurons, numInputs)
 		numInputs = numNeurons
 	}
-	return NewNet(l)
+	return NewNet(l, n.inputs)
 }

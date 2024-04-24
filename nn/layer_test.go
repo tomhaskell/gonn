@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestLayerProcess(t *testing.T) {
+func TestLayerOutput(t *testing.T) {
 	l := &Layer{
 		Neurons: []*Neuron{
 			{
@@ -19,7 +19,8 @@ func TestLayerProcess(t *testing.T) {
 		},
 	}
 
-	out := l.Process([]float64{0.1, 0.2})
+	l.Update([]float64{0.1, 0.2})
+	out := l.Activation()
 
 	expected := []float64{
 		0.1*0.3 + 0.2*-0.8 + 0.7,   // 0.57

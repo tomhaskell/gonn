@@ -5,14 +5,15 @@ import (
 	"testing"
 )
 
-func TestNeuronProcessLinear(t *testing.T) {
+func TestNeuronOutputLinear(t *testing.T) {
 	n := &Neuron{
 		Type:    LINEAR,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
 
-	out := n.Process([]float64{0.1, 0.2})
+	n.Update([]float64{0.1, 0.2})
+	out := n.Activation()
 
 	expected := 0.1*0.3 + 0.2*-0.8 + 0.7 // 0.57
 
@@ -22,14 +23,15 @@ func TestNeuronProcessLinear(t *testing.T) {
 
 }
 
-func TestNeuronProcessSigmoid(t *testing.T) {
+func TestNeuronOutputSigmoid(t *testing.T) {
 	n := &Neuron{
 		Type:    SIGMOID,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
 
-	out := n.Process([]float64{0.1, 0.2})
+	n.Update([]float64{0.1, 0.2})
+	out := n.Activation()
 
 	expected := 1.0 / (1.0 + math.Exp(-0.57)) // ~0.638763
 
@@ -38,14 +40,15 @@ func TestNeuronProcessSigmoid(t *testing.T) {
 	}
 }
 
-func TestNeuronProcessRelu(t *testing.T) {
+func TestNeuronOutputRelu(t *testing.T) {
 	n := &Neuron{
 		Type:    RELU,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
 
-	out := n.Process([]float64{0.1, 0.2})
+	n.Update([]float64{0.1, 0.2})
+	out := n.Activation()
 
 	expected := 0.1*0.3 + 0.2*-0.8 + 0.7 // 0.57
 
@@ -53,7 +56,8 @@ func TestNeuronProcessRelu(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expected, out)
 	}
 
-	out = n.Process([]float64{-1, 2})
+	n.Update([]float64{-1, 2})
+	out = n.Activation()
 	expected = 0.0
 
 	if out != expected {

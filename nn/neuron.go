@@ -21,6 +21,7 @@ type Neuron struct {
 	Type    string    `json:"type"`
 	Weights []float64 `json:"weights"`
 	Bias    float64   `json:"bias"`
+	z	    float64
 }
 
 // NewNeuron creates a new neuron with the given number of inputs, and using the given activation
@@ -44,21 +45,26 @@ func NewNeuron(activationType string, numInputs int) *Neuron {
 }
 
 // Process takes a slice of inputs and returns the output of the neuron
-func (n *Neuron) Process(inputs []float64) float64 {
-	sum := n.Bias
+func (n *Neuron) Update(inputs []float64) float64 {
+	z := n.Bias
 	for i, input := range inputs {
-		sum += input * n.Weights[i]
+		z += input * n.Weights[i]
 	}
+	n.z = z
+	return z
+}
+
+func (n *Neuron) Activation() float64 {
 	switch n.Type {
 	case SIGMOID:
-		return nnmath.Sigmoid(sum)
+		return nnmath.Sigmoid(n.z)
 	case RELU:
-		if sum < 0 {
+		if n.z < 0 {
 			return 0
 		}
-		return sum
+		return n.z
 	case LINEAR:
-		return sum
+		return n.z
 	}
 	return 0
 }
