@@ -9,16 +9,17 @@ import (
 	"strings"
 
 	"github.com/tomhaskell/gonn"
+	"github.com/tomhaskell/gonn/nn"
 	"github.com/tomhaskell/gonn/training"
 )
 
 var (
-	layers = flag.String("layers","24 16","list specifying number of neurons in each hidden layer")
-	epochs = flag.Int("epochs", 30, "number of training epochs to train the network for")
+	layers    = flag.String("layers", "24 16", "list specifying number of neurons in each hidden layer")
+	epochs    = flag.Int("epochs", 30, "number of training epochs to train the network for")
 	learnRate = flag.Float64("learnRate", 0.7, "the learning rate to use in the backprop algorithm")
 	batchSize = flag.Int("batchSize", 20, "the size of mini-batch to use for stochastic gradient descent")
-	act = flag.String("act", "sigmoid", "the activation function to use")
-	momentum = flag.Float64("momentum",0.0,"the momentum to use for the gradient descent algorithm")
+	act       = flag.String("act", "sigmoid", "the activation function to use (\"sigmoid\",\"relu\",\"linear\")")
+	momentum  = flag.Float64("momentum", 0.0, "the momentum to use for the gradient descent algorithm")
 )
 
 func main() {
@@ -27,28 +28,28 @@ func main() {
 	// load the data
 	trainInputs, trainTargets := parseDataFile(".data/mnist_train.csv")
 	testInputs, testTargets := parseDataFile(".data/mnist_test.csv")
-	
+
 	// create a new neural network with 784 input neurons
-	nb := gonn.NewBuilder().SetInputCount(784)
+	nb := gonn.NewBuilder().SetDefaultActivation(*act).SetInputCount(784)
 
 	for _, s := range strings.Split(*layers, " ") {
-		l, err := strconv.ParseInt(s,10,32)
+		l, err := strconv.ParseInt(s, 10, 32)
 		if err != nil {
 			panic(fmt.Errorf("error parsing layers: %w", err))
 		}
 		nb = nb.AddLayer(int(l))
 	}
 
-	// add output neurons
-	nb = nb.AddLayer(10)
+	// add output neurons - always use Sigmoid function (until softmax is available)
+	nb = nb.AddLayerWithActivation(10, nn.SIGMOID)
 
 	net := nb.Build()
 
 	fmt.Println("training net: ", net)
-	
+
 	// train the network
 	var t training.Trainer = training.NewBackProp(*learnRate, *momentum, *batchSize)
-	
+
 	for e := 0; e < *epochs; e++ { // 30 epochs
 		t.TrainEpoch(net, &trainInputs, &trainTargets)
 
