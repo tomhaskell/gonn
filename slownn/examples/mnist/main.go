@@ -8,9 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tomhaskell/gonn"
-	"github.com/tomhaskell/gonn/nn"
-	"github.com/tomhaskell/gonn/training"
+	"github.com/tomhaskell/gonn/slownn"
+	"github.com/tomhaskell/gonn/slownn/training"
 )
 
 var (
@@ -30,7 +29,7 @@ func main() {
 	testInputs, testTargets := parseDataFile(".data/mnist_test.csv")
 
 	// create a new neural network with 784 input neurons
-	nb := gonn.NewBuilder().SetDefaultActivation(*act).SetInputCount(784)
+	nb := slownn.NewBuilder().SetDefaultActivation(*act).SetInputCount(784)
 
 	for _, s := range strings.Split(*layers, " ") {
 		l, err := strconv.ParseInt(s, 10, 32)
@@ -41,14 +40,14 @@ func main() {
 	}
 
 	// add output neurons - always use Sigmoid function (until softmax is available)
-	nb = nb.AddLayerWithActivation(10, nn.SIGMOID)
+	nb = nb.AddLayerWithActivation(10, slownn.SIGMOID)
 
 	net := nb.Build()
 
 	fmt.Println("training net: ", net)
 
 	// train the network
-	var t training.Trainer = training.NewBackProp(*learnRate, *momentum, *batchSize)
+	t := training.NewBackProp(*learnRate, *momentum, *batchSize)
 
 	for e := 0; e < *epochs; e++ { // 30 epochs
 		t.TrainEpoch(net, &trainInputs, &trainTargets)

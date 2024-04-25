@@ -1,4 +1,4 @@
-package nn
+package slownn
 
 import (
 	"math/rand"
@@ -6,7 +6,7 @@ import (
 	"github.com/tomhaskell/gonn/nnmath"
 )
 
-// Activation function types
+// Activation function type consts
 const (
 	// SIGMOID is the sigmoid activation function
 	SIGMOID = "sigmoid"

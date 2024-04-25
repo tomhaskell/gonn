@@ -1,21 +1,19 @@
-package gonn
+package slownn
 
 import (
 	"fmt"
-
-	"github.com/tomhaskell/gonn/nn"
 )
 
 // Net is a simple feedforward neural network
 type Net struct {
-	Layers []*nn.Layer `json:"layers"`
-	NumInputs int `json:"numInputs"`
+	Layers    []*Layer `json:"layers"`
+	NumInputs int      `json:"numInputs"`
 }
 
 // NewNet creates a new neural network with the given layers
-func NewNet(Layers []*nn.Layer, numInputs int) *Net {
+func NewNet(Layers []*Layer, numInputs int) *Net {
 	return &Net{
-		Layers: Layers,
+		Layers:    Layers,
 		NumInputs: numInputs,
 	}
 }
@@ -29,7 +27,7 @@ func (n *Net) FeedForward(inputs []float64) []float64 {
 	return outputs
 }
 
-// Calculate runs the input through the network and returns the z-vectors and activations of each 
+// Calculate runs the input through the network and returns the z-vectors and activations of each
 // layer. This can be useful for debugging the network, or for training algorithms that require the
 // intermediate values of the network (such as backpropagation).
 func (n *Net) Calculate(inputs []float64) ([][]float64, [][]float64) {
@@ -45,7 +43,7 @@ func (n *Net) Calculate(inputs []float64) ([][]float64, [][]float64) {
 }
 
 func (n *Net) String() string {
-	str := fmt.Sprintf("%v[Input]",n.NumInputs)
+	str := fmt.Sprintf("%v[Input]", n.NumInputs)
 	for _, l := range n.Layers {
 		str += fmt.Sprintf(", %v[%s]", len(l.Neurons), l.Type)
 	}

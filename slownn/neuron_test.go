@@ -1,4 +1,4 @@
-package nn
+package slownn
 
 import (
 	"math"

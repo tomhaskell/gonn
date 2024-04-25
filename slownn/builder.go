@@ -1,6 +1,4 @@
-package gonn
-
-import "github.com/tomhaskell/gonn/nn"
+package slownn
 
 // Builder is a Builder pattern for creating a new gonn neural network
 type Builder interface {
@@ -14,7 +12,7 @@ type Builder interface {
 // NewBuilder creates a new Builder
 func NewBuilder() Builder {
 	return &netBuilder{
-		defaultActivation: nn.SIGMOID,
+		defaultActivation: SIGMOID,
 		inputs:            0,
 		layers:            make([]int, 0),
 		activations:       make([]string, 0),
@@ -53,10 +51,10 @@ func (n netBuilder) AddLayerWithActivation(numNeurons int, activationType string
 }
 
 func (n netBuilder) Build() *Net {
-	l := make([]*nn.Layer, len(n.layers))
+	l := make([]*Layer, len(n.layers))
 	numInputs := n.inputs
 	for i, numNeurons := range n.layers {
-		l[i] = nn.NewLayer(n.activations[i], numNeurons, numInputs)
+		l[i] = NewLayer(n.activations[i], numNeurons, numInputs)
 		numInputs = numNeurons
 	}
 	return NewNet(l, n.inputs)

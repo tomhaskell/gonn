@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/tomhaskell/gonn"
-	"github.com/tomhaskell/gonn/nn"
 	"github.com/tomhaskell/gonn/nnmath"
+	"github.com/tomhaskell/gonn/slownn"
 )
 
 type BackProp struct {
@@ -31,7 +30,7 @@ func NewBackProp(learningRate, momentum float64, batchSize int) *BackProp {
 // Train trains the network using the backpropagation algorithm
 //
 // epochs is the number of times to train the network on the entire dataset
-func (b *BackProp) Train(net *gonn.Net, inputs, targets *[][]float64, epochs int) {
+func (b *BackProp) Train(net *slownn.Net, inputs, targets *[][]float64, epochs int) {
 	for e := 0; e < epochs; e++ {
 		b.TrainEpoch(net, inputs, targets)
 	}
@@ -39,7 +38,7 @@ func (b *BackProp) Train(net *gonn.Net, inputs, targets *[][]float64, epochs int
 
 // TrainEpoch trains the network using the backpropagation algorithm for a single epoch. This is
 // mainly for use during testing
-func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
+func (b *BackProp) TrainEpoch(net *slownn.Net, inputs, targets *[][]float64) {
 	in := *inputs
 	targ := *targets
 	// consts
@@ -162,15 +161,15 @@ func (b *BackProp) TrainEpoch(net *gonn.Net, inputs, targets *[][]float64) {
 
 func activationDerivative(actType string, value float64) float64 {
 	switch actType {
-	case nn.SIGMOID:
+	case slownn.SIGMOID:
 		return nnmath.SigmoidPrime(value)
-	case nn.RELU:
+	case slownn.RELU:
 		if value > 0 {
 			return 1
 		} else {
 			return 0.01
 		}
-	case nn.LINEAR:
+	case slownn.LINEAR:
 		return 1
 	}
 	// unknown
