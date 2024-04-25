@@ -3,11 +3,13 @@ package slownn
 import (
 	"math"
 	"testing"
+
+	"github.com/tomhaskell/gonn/nnmath"
 )
 
 func TestNeuronOutputLinear(t *testing.T) {
 	n := &Neuron{
-		Type:    LINEAR,
+		Type:    nnmath.LINEAR,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
@@ -25,7 +27,7 @@ func TestNeuronOutputLinear(t *testing.T) {
 
 func TestNeuronOutputSigmoid(t *testing.T) {
 	n := &Neuron{
-		Type:    SIGMOID,
+		Type:    nnmath.SIGMOID,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
@@ -42,7 +44,7 @@ func TestNeuronOutputSigmoid(t *testing.T) {
 
 func TestNeuronOutputRelu(t *testing.T) {
 	n := &Neuron{
-		Type:    RELU,
+		Type:    nnmath.RELU,
 		Weights: []float64{0.3, -0.8},
 		Bias:    0.7,
 	}
@@ -67,8 +69,8 @@ func TestNeuronOutputRelu(t *testing.T) {
 }
 
 func TestNewNeuron(t *testing.T) {
-	n := NewNeuron(LINEAR, 3)
-	n2 := NewNeuron(LINEAR, 3)
+	n := NewNeuron(nnmath.LINEAR, 3)
+	n2 := NewNeuron(nnmath.LINEAR, 3)
 
 	if len(n.Weights) != 3 {
 		t.Errorf("Expected 3 weights, got %v", len(n.Weights))

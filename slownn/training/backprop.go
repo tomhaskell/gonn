@@ -161,15 +161,11 @@ func (b *BackProp) TrainEpoch(net *slownn.Net, inputs, targets *[][]float64) {
 
 func activationDerivative(actType string, value float64) float64 {
 	switch actType {
-	case slownn.SIGMOID:
+	case nnmath.SIGMOID:
 		return nnmath.SigmoidPrime(value)
-	case slownn.RELU:
-		if value > 0 {
-			return 1
-		} else {
-			return 0.01
-		}
-	case slownn.LINEAR:
+	case nnmath.RELU:
+		return nnmath.LeakyReluPrime(value)
+	case nnmath.LINEAR:
 		return 1
 	}
 	// unknown

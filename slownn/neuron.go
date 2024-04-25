@@ -6,16 +6,6 @@ import (
 	"github.com/tomhaskell/gonn/nnmath"
 )
 
-// Activation function type consts
-const (
-	// SIGMOID is the sigmoid activation function
-	SIGMOID = "sigmoid"
-	// RELU is the rectified linear unit activation function
-	RELU = "relu"
-	// LINEAR is the linear activation function
-	LINEAR = "linear"
-)
-
 // Neuron represents a single neuron in a neural network
 type Neuron struct {
 	Type    string    `json:"type"`
@@ -56,16 +46,12 @@ func (n *Neuron) Update(inputs []float64) float64 {
 
 func (n *Neuron) Activation() float64 {
 	switch n.Type {
-	case SIGMOID:
+	case nnmath.SIGMOID:
 		return nnmath.Sigmoid(n.z)
-	case RELU:
-		if n.z < 0 {
-			// leak negative values
-			return 0.01 * n.z
-		}
-		return n.z
-	case LINEAR:
-		return n.z
+	case nnmath.RELU:
+		return nnmath.LeakyRelu(n.z)
+	case nnmath.LINEAR:
+		return nnmath.Linear(n.z)
 	}
 	return 0
 }

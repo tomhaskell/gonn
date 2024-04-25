@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/tomhaskell/gonn/nnmath"
 	"github.com/tomhaskell/gonn/slownn"
 	"github.com/tomhaskell/gonn/slownn/training"
 )
@@ -40,7 +41,7 @@ func main() {
 	}
 
 	// add output neurons - always use Sigmoid function (until softmax is available)
-	nb = nb.AddLayerWithActivation(10, slownn.SIGMOID)
+	nb = nb.AddLayerWithActivation(10, nnmath.SIGMOID)
 
 	net := nb.Build()
 

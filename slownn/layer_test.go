@@ -2,17 +2,19 @@ package slownn
 
 import (
 	"testing"
+
+	"github.com/tomhaskell/gonn/nnmath"
 )
 
 func TestLayerOutput(t *testing.T) {
 	l := &Layer{
 		Neurons: []*Neuron{
 			{
-				Type:    LINEAR,
+				Type:    nnmath.LINEAR,
 				Weights: []float64{0.3, -0.8},
 				Bias:    0.7,
 			}, {
-				Type:    LINEAR,
+				Type:    nnmath.LINEAR,
 				Weights: []float64{0.7, 0.15},
 				Bias:    -0.57,
 			},
@@ -35,7 +37,7 @@ func TestLayerOutput(t *testing.T) {
 }
 
 func TestNewLayer(t *testing.T) {
-	l := NewLayer(LINEAR, 3, 4)
+	l := NewLayer(nnmath.LINEAR, 3, 4)
 
 	// check for 3 neurons
 	if len(l.Neurons) != 3 {

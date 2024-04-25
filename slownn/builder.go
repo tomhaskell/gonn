@@ -1,5 +1,7 @@
 package slownn
 
+import "github.com/tomhaskell/gonn/nnmath"
+
 // Builder is a Builder pattern for creating a new gonn neural network
 type Builder interface {
 	SetDefaultActivation(activationType string) Builder
@@ -12,7 +14,7 @@ type Builder interface {
 // NewBuilder creates a new Builder
 func NewBuilder() Builder {
 	return &netBuilder{
-		defaultActivation: SIGMOID,
+		defaultActivation: nnmath.SIGMOID,
 		inputs:            0,
 		layers:            make([]int, 0),
 		activations:       make([]string, 0),
